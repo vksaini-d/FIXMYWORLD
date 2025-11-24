@@ -1,0 +1,25 @@
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Stronger storm pulse effect */
+@keyframes pulse-strong {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.animate-pulse-strong {
+    animation: pulse-strong 1.5s ease-in-out infinite;
+}
