@@ -88,7 +88,7 @@ npm run dev
 ```bash
 http://localhost:5173 
 ```
-##📂 Project Structure
+## 📂 Project Structure
 ```src/
 ├── App.jsx             # Main Application Logic (Map, Auth, State)
 ├── main.jsx            # Entry Point
@@ -96,20 +96,20 @@ http://localhost:5173
 ├── custom.css          # Neon Animations & Leaflet Overrides
 └── assets/             # Images and Static Files
 ```
-🤝 Contributing
-Contributions are always welcome!
+## 🤝 Contributing
+## Contributions are always welcome!
 
-Fork the project.
+## Fork the project.
 
-Create your Feature Branch (git checkout -b feature/AmazingFeature).
+## Create your Feature Branch (git checkout -b feature/AmazingFeature).
 
-Commit your changes (git commit -m 'Add some AmazingFeature').
+## Commit your changes (git commit -m 'Add some AmazingFeature').
 
-Push to the Branch (git push origin feature/AmazingFeature).
+## Push to the Branch (git push origin feature/AmazingFeature).
 
-Open a Pull Request.
+## Open a Pull Request.
 
-📜 License
-Distributed under the MIT License. See LICENSE for more information.
+## 📜 License
+## Distributed under the MIT License. See LICENSE for more information.
 
 <p align="center"> Built with ❤️ by [VIKASH SAINI] </p>
