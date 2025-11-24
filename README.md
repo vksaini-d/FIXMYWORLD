@@ -97,19 +97,19 @@ http://localhost:5173
 └── assets/             # Images and Static Files
 ```
 ## 🤝 Contributing
-## Contributions are always welcome!
+-- Contributions are always welcome!❤️
 
-## Fork the project.
+-- Fork the project.
 
-## Create your Feature Branch (git checkout -b feature/AmazingFeature).
+-- Create your Feature Branch (git checkout -b feature/AmazingFeature).
 
-## Commit your changes (git commit -m 'Add some AmazingFeature').
+-- Commit your changes (git commit -m 'Add some AmazingFeature').
 
-## Push to the Branch (git push origin feature/AmazingFeature).
+-- Push to the Branch (git push origin feature/AmazingFeature).
 
-## Open a Pull Request.
+-- Open a Pull Request.
 
 ## 📜 License
-## Distributed under the MIT License. See LICENSE for more information.
+-- Distributed under the MIT License. See LICENSE for more information.
 
 <p align="center"> Built with ❤️ by [VIKASH SAINI] </p>
