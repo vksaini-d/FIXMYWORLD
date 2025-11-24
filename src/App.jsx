@@ -424,10 +424,63 @@ const IssueDetailView = ({ issue, handleBack, getCategoryClass, db, userId }) =>
   const handleUpvote = async () => { if (!db || !userId) return; try { if (issue.upvotes && issue.upvotes.includes(userId)) { alert("Already upvoted."); return; } await updateDoc(doc(db, 'issues', issue.id), { upvotes: arrayUnion(userId) }); } catch (e) { console.error(e); } };
   return (<div className="mx-auto max-w-4xl"><button onClick={handleBack} className="mb-4 flex items-center text-cyan-400 hover:text-cyan-300">← Back to Dashboard</button><div className="overflow-hidden rounded-xl border border-cyan-500/30 bg-gray-900/80 backdrop-blur-md"><div className="border-b border-gray-800 p-6"><div className="flex items-start justify-between"><div><span className={`mb-2 inline-block rounded px-3 py-1 text-sm font-bold ${getCategoryClass(issue.category)}`}>{issueCategories.find(c => c.value === issue.category)?.label}</span><h1 className="text-3xl font-bold text-white">{issue.title}</h1></div><div className={`px-3 py-1 rounded border ${issue.status === 'resolved' ? 'border-green-500 text-green-400' : 'border-yellow-500 text-yellow-400'}`}>{issue.status?.toUpperCase()}</div></div></div><div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6"><div className="md:col-span-2 space-y-6"><div><h3 className="text-lg font-semibold text-cyan-400">Description</h3><p className="mt-2 text-gray-300 leading-relaxed">{issue.description}</p></div><div><h3 className="text-lg font-semibold text-cyan-400">Location Data</h3><p className="text-sm text-gray-400 font-mono">Lat: {issue.lat}, Lng: {issue.lng}</p></div></div><div className="rounded-lg bg-gray-800/50 p-4 space-y-4 h-fit text-center"><div className="text-4xl font-bold text-white">{issue.upvotes?.length || 0}</div><div className="text-xs text-gray-400 uppercase">Community Priority</div><button onClick={handleUpvote} className="w-full rounded bg-cyan-600 py-2 font-bold text-white hover:bg-cyan-500">▲ Upvote</button></div></div></div></div>);
 };
-const WeatherEffects = ({ weatherCondition }) => { if (!weatherCondition) return null; const lower = weatherCondition.toLowerCase(); let effectClass = ''; if (lower.includes('rain') || lower.includes('drizzle')) effectClass = 'bg-blue-900/10 mix-blend-overlay'; else if (lower.includes('mist') || lower.includes('fog')) effectClass = 'bg-gray-500/10 backdrop-blur-[1px]'; else if (lower.includes('sunny') || lower.includes('clear')) effectClass = 'bg-yellow-500/5 mix-blend-overlay'; return <div className={`pointer-events-none fixed inset-0 z-0 ${effectClass}`}></div>; };
+
+/* -------------------------------------------------------------------------- */
+/* UPDATED WeatherEffects Component                                           */
+/* -------------------------------------------------------------------------- */
+
+const WeatherEffects = ({ weatherCondition }) => { 
+  if (!weatherCondition) return null; 
+  const lower = weatherCondition.toLowerCase(); 
+  let effectClass = ''; 
+  let key = '';
+
+  if (lower.includes('rain') || lower.includes('drizzle')) {
+    effectClass = 'bg-blue-900/20 mix-blend-overlay'; // Increased opacity
+    key = 'rain';
+  } else if (lower.includes('mist') || lower.includes('fog')) {
+    effectClass = 'bg-gray-500/20 backdrop-blur-[2px]'; // Increased opacity and blur
+    key = 'mist';
+  } else if (lower.includes('sunny') || lower.includes('clear')) {
+    effectClass = 'bg-yellow-500/10 mix-blend-overlay'; // Increased opacity
+    key = 'sunny';
+  } else if (lower.includes('cloudy') || lower.includes('overcast')) {
+    effectClass = 'bg-gray-800/20 mix-blend-overlay'; // NEW: Dark gray tint
+    key = 'cloudy';
+  } else if (lower.includes('snow') || lower.includes('sleet')) {
+    effectClass = 'bg-white/30 backdrop-blur-[1.5px]'; // NEW: Bright, blurred overlay
+    key = 'snow';
+  } else if (lower.includes('thunder') || lower.includes('storm')) {
+    effectClass = 'bg-red-900/30 mix-blend-overlay animate-pulse-light'; // NEW: Red storm warning pulse
+    key = 'storm';
+  }
+  
+  // Return the fixed overlay div with the dynamic effect class
+  // The 'key' ensures React re-renders if effectClass changes, although not strictly needed for a fixed div
+  return <div key={key} className={`pointer-events-none fixed inset-0 z-0 ${effectClass}`}></div>; 
+};
+
+/* -------------------------------------------------------------------------- */
+/* GLOBAL STYLES WITH NEW TAILWIND KEYFRAME                                   */
+/* -------------------------------------------------------------------------- */
+
 const Footer = ({ weather }) => (<footer className="flex-none border-t border-gray-800 bg-black/80 p-6 text-center backdrop-blur-md"><p className="text-gray-500 text-sm">© 2025 FIXMYWORLD. Built for a better tomorrow by Vikash Saini.</p>{weather && <div className="mt-2 flex items-center justify-center gap-4 text-xs text-cyan-600 font-mono"><span>{weather.condition}</span><span>•</span><span>{weather.temp_c}°C</span><span>•</span><span>Hum: {weather.humidity}%</span></div>}</footer>);
 const NavItem = ({ label, icon, isActive, onClick }) => (<button onClick={onClick} className={`group flex w-full items-center space-x-3 rounded-lg px-3 py-3 text-base font-semibold transition-all duration-300 hover:scale-105 hover:bg-cyan-500/20 ${isActive ? 'bg-cyan-500/20 text-cyan-300 shadow-[inset_0_0_10px_rgba(14,165,233,0.5)] border border-cyan-500/50' : 'text-gray-400 hover:bg-cyan-500/10 hover:text-cyan-400'}`}><span className={isActive ? 'text-cyan-300' : 'text-gray-500 group-hover:text-cyan-400'}>{React.cloneElement(icon, { width: 20, height: 20 })}</span><span>{label}</span></button>);
-const GlobalStyles = () => (<style>{`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap'); body { margin:0; font-family: 'Inter', sans-serif; } .scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }`}</style>);
+const GlobalStyles = () => (<style>{`
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap'); 
+  body { margin:0; font-family: 'Inter', sans-serif; } 
+  .scrollbar-hide::-webkit-scrollbar { display: none; } 
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  
+  /* NEW: Tailwind-style keyframe for subtle storm pulse effect */
+  @keyframes pulse-light {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+  .animate-pulse-light {
+    animation: pulse-light 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+`}</style>);
 
 // ICONS
 const MoonIcon = (p) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>;
