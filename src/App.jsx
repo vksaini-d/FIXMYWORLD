@@ -426,7 +426,7 @@ const IssueDetailView = ({ issue, handleBack, getCategoryClass, db, userId }) =>
 };
 
 /* -------------------------------------------------------------------------- */
-/* UPDATED WeatherEffects Component                                           */
+/* UPDATED WeatherEffects Component (High Visibility)                         */
 /* -------------------------------------------------------------------------- */
 
 const WeatherEffects = ({ weatherCondition }) => { 
@@ -435,33 +435,32 @@ const WeatherEffects = ({ weatherCondition }) => {
   let effectClass = ''; 
   let key = '';
 
-  if (lower.includes('rain') || lower.includes('drizzle')) {
-    effectClass = 'bg-blue-900/20 mix-blend-overlay'; // Increased opacity
+  if (lower.includes('rain') || lower.includes('drizzle') || lower.includes('patchy rain')) {
+    effectClass = 'bg-blue-900/50 mix-blend-overlay'; // Increased opacity for gloom
     key = 'rain';
-  } else if (lower.includes('mist') || lower.includes('fog')) {
-    effectClass = 'bg-gray-500/20 backdrop-blur-[2px]'; // Increased opacity and blur
+  } else if (lower.includes('mist') || lower.includes('fog') || lower.includes('haze')) {
+    effectClass = 'bg-gray-500/40 backdrop-blur-[4px]'; // Increased opacity and blur
     key = 'mist';
   } else if (lower.includes('sunny') || lower.includes('clear')) {
-    effectClass = 'bg-yellow-500/10 mix-blend-overlay'; // Increased opacity
+    effectClass = 'bg-yellow-500/20 mix-blend-overlay'; // Increased opacity for brightness
     key = 'sunny';
   } else if (lower.includes('cloudy') || lower.includes('overcast')) {
-    effectClass = 'bg-gray-800/20 mix-blend-overlay'; // NEW: Dark gray tint
+    effectClass = 'bg-gray-800/40 mix-blend-overlay'; // Deep gray tint for overcast
     key = 'cloudy';
-  } else if (lower.includes('snow') || lower.includes('sleet')) {
-    effectClass = 'bg-white/30 backdrop-blur-[1.5px]'; // NEW: Bright, blurred overlay
+  } else if (lower.includes('snow') || lower.includes('sleet') || lower.includes('ice')) {
+    effectClass = 'bg-white/50 backdrop-blur-[3px]'; // Heavy bright, blurred overlay
     key = 'snow';
-  } else if (lower.includes('thunder') || lower.includes('storm')) {
-    effectClass = 'bg-red-900/30 mix-blend-overlay animate-pulse-light'; // NEW: Red storm warning pulse
+  } else if (lower.includes('thunder') || lower.includes('storm') || lower.includes('lightning') || lower.includes('tornado')) {
+    effectClass = 'bg-red-900/40 mix-blend-overlay animate-pulse-strong'; // Intense red storm warning pulse
     key = 'storm';
   }
   
   // Return the fixed overlay div with the dynamic effect class
-  // The 'key' ensures React re-renders if effectClass changes, although not strictly needed for a fixed div
   return <div key={key} className={`pointer-events-none fixed inset-0 z-0 ${effectClass}`}></div>; 
 };
 
 /* -------------------------------------------------------------------------- */
-/* GLOBAL STYLES WITH NEW TAILWIND KEYFRAME                                   */
+/* GLOBAL STYLES WITH STRONGER PULSE KEYFRAME                                 */
 /* -------------------------------------------------------------------------- */
 
 const Footer = ({ weather }) => (<footer className="flex-none border-t border-gray-800 bg-black/80 p-6 text-center backdrop-blur-md"><p className="text-gray-500 text-sm">© 2025 FIXMYWORLD. Built for a better tomorrow by Vikash Saini.</p>{weather && <div className="mt-2 flex items-center justify-center gap-4 text-xs text-cyan-600 font-mono"><span>{weather.condition}</span><span>•</span><span>{weather.temp_c}°C</span><span>•</span><span>Hum: {weather.humidity}%</span></div>}</footer>);
@@ -472,13 +471,13 @@ const GlobalStyles = () => (<style>{`
   .scrollbar-hide::-webkit-scrollbar { display: none; } 
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   
-  /* NEW: Tailwind-style keyframe for subtle storm pulse effect */
-  @keyframes pulse-light {
+  /* UPDATED: Tailwind-style keyframe for stronger storm pulse effect */
+  @keyframes pulse-strong {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
+    50% { opacity: 0.6; } /* Faster and deeper pulse */
   }
-  .animate-pulse-light {
-    animation: pulse-light 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  .animate-pulse-strong {
+    animation: pulse-strong 1.5s ease-in-out infinite; /* Quicker animation */
   }
 `}</style>);
 
