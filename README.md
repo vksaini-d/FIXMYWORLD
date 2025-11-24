@@ -62,7 +62,7 @@ Follow these steps to run the project locally.
 
 ### 1. Clone the repository
 ```bash
-git clone [https://github.com/vksaini-d/fixmyworld.git](https://github.com/vksaini-d/fixmyworld.git)
+git clone https://github.com/vksaini-d/fixmyworld.git
 cd fix-my-world
 ```
 2. Install dependencies
@@ -71,8 +71,6 @@ npm install
 ```
 3. Configure Environment Variables
 Create a .env file in the root directory and add your keys:
-
-Code snippet
 ```bash
 VITE_FIREBASE_API_KEY=your_firebase_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
@@ -86,17 +84,18 @@ VITE_WEATHER_API_KEY=your_weatherapi_key
 ```bash
 npm run dev
 ```
-Live at locally
+5. Live at locally
 ```bash
 http://localhost:5173 
 ```
-📂 Project Structure
-src/
+##📂 Project Structure
+```src/
 ├── App.jsx             # Main Application Logic (Map, Auth, State)
 ├── main.jsx            # Entry Point
 ├── index.css           # Tailwind Imports
 ├── custom.css          # Neon Animations & Leaflet Overrides
 └── assets/             # Images and Static Files
+```
 🤝 Contributing
 Contributions are always welcome!
 
