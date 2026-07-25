@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { doc, setDoc } from 'firebase/firestore';
 
@@ -17,6 +17,7 @@ import { IssueDetailView } from './components/IssueDetailView';
 import { LoginOverlay } from './components/LoginOverlay';
 import { WeatherEffects } from './components/WeatherEffects';
 import { Footer } from './components/Footer';
+import { BottomNav } from './components/BottomNav';
 
 // Constants
 import { issueCategories } from './constants';
@@ -31,6 +32,7 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userName, setUserName] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const weatherTimerRef = useRef(null);
 
   // Custom Hooks
   const { auth, db, user, isAuthReady, handleGoogleLogin, handleEmailLogin, handleEmailSignup, handleLogout } = useFirebaseAuth();
@@ -47,14 +49,13 @@ export default function App() {
   // Network Status Monitoring
   useEffect(() => {
     const handleOnline = () => toast.success('Back online!');
-    const handleOffline = () => toast.error('You are offline. Some features may be limited.');
+    const handleOffline = () => toast.error('You are offline. Cached data is available.');
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Initial check
     if (!navigator.onLine) {
-      toast.error('You are offline. Some features may be limited.');
+      toast.error('You are offline. Cached data is available.');
     }
 
     return () => {
@@ -65,7 +66,7 @@ export default function App() {
 
   // Fetch Weather Helper
   const fetchWeather = async (lat, lon) => {
-    if (!navigator.onLine) return null; // Skip if offline
+    if (!navigator.onLine || !WEATHER_API_KEY) return null;
     try {
       const url = `https://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${lat},${lon}`;
       const r = await fetch(url);
@@ -82,7 +83,7 @@ export default function App() {
     }
   };
 
-  // 1. Sync Global Weather (Background Effects) based on User Location
+  // Sync Global Weather based on User Location
   useEffect(() => {
     if (userLocation) {
       fetchWeather(userLocation.lat, userLocation.lng).then(data => {
@@ -96,12 +97,16 @@ export default function App() {
     }
   }, [userLocation]);
 
-  // 2. Handle Map Center Weather Fetching
-  const handleMapCenterChange = async (center) => {
+  // Handle Map Center Weather Fetching with 600ms Debounce
+  const handleMapCenterChange = (center) => {
     if (!center) return;
-    // Debounce could be added here if needed, but for now we fetch on moveend
-    const data = await fetchWeather(center.lat, center.lng);
-    if (data) setMapCenterWeather(data);
+    if (weatherTimerRef.current) {
+      clearTimeout(weatherTimerRef.current);
+    }
+    weatherTimerRef.current = setTimeout(async () => {
+      const data = await fetchWeather(center.lat, center.lng);
+      if (data) setMapCenterWeather(data);
+    }, 600);
   };
 
   const handleNameChange = async (e) => {
@@ -134,11 +139,11 @@ export default function App() {
 
   const getCategoryClass = (category) => {
     switch (category) {
-      case 'pothole': return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
-      case 'garbage-dump': return 'bg-green-500/20 text-green-300 border border-green-500/30';
-      case 'broken-streetlight': return 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30';
+      case 'pothole': return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+      case 'garbage-dump': return 'bg-teal-500/20 text-teal-300 border border-teal-500/30';
+      case 'broken-streetlight': return 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
       case 'water-leakage': return 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
-      default: return 'bg-gray-500/20 text-gray-300 border border-gray-500/30';
+      default: return 'bg-slate-500/20 text-slate-300 border border-slate-500/30';
     }
   };
 
@@ -161,15 +166,17 @@ export default function App() {
 
   if (!isAuthReady) {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-black">
-        <span className="text-2xl font-orbitron text-cyan-400 animate-pulse">Initializing System...</span>
+      <div className="flex min-h-screen w-full items-center justify-center bg-slate-950">
+        <span className="text-2xl font-orbitron font-bold text-emerald-400 animate-pulse tracking-wider">
+          Initializing System Telemetry...
+        </span>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="flex min-h-screen w-full font-share-tech text-gray-200 bg-black bg-gradient-to-br from-gray-900 via-black to-blue-900">
+      <div className="flex min-h-screen w-full font-share-tech text-slate-200 bg-neutral-950 bg-gradient-to-br from-neutral-950 via-slate-950 to-stone-950">
         <WeatherEffects weatherCondition={weather?.condition} />
         <LoginOverlay
           onGoogleLogin={handleGoogleLogin}
@@ -184,9 +191,20 @@ export default function App() {
   const selectedIssue = issues.find((i) => i.id === selectedIssueId);
 
   return (
-    <div className="flex w-full h-[100dvh] overflow-hidden font-share-tech text-gray-200 bg-black bg-gradient-to-br from-gray-900 via-black to-blue-900">
+    <div className="flex w-full h-[100dvh] overflow-hidden font-share-tech text-slate-200 bg-neutral-950 bg-gradient-to-br from-neutral-950 via-slate-950 to-stone-950">
       <WeatherEffects weatherCondition={weather?.condition} />
-      <Toaster position="top-center" toastOptions={{ style: { background: '#1f2937', color: '#fff', border: '1px solid rgba(6, 182, 212, 0.3)' } }} />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: 'rgba(15, 23, 42, 0.92)',
+            backdropFilter: 'blur(20px)',
+            color: '#f8fafc',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.6)',
+          },
+        }}
+      />
 
       <Sidebar
         user={user}
@@ -217,7 +235,7 @@ export default function App() {
               weatherAtCenter={mapCenterWeather}
             />
           ) : (
-            <div className="overflow-y-auto p-4 h-full scrollbar-hide">
+            <div className="overflow-y-auto p-4 sm:p-6 h-full scrollbar-hide">
               {view === 'analytics' && <AnalyticsView data={analyticsData} />}
               {view === 'report' && <ReportIssueView db={db} userId={user.uid} onIssueReported={() => setView('dashboard')} />}
               {view === 'detail' && <IssueDetailView issue={selectedIssue} handleBack={handleBack} getCategoryClass={getCategoryClass} db={db} userId={user.uid} />}
@@ -226,6 +244,7 @@ export default function App() {
         </main>
 
         <Footer weather={weather} />
+        <BottomNav view={view} setView={handleViewChange} />
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import {
     GoogleAuthProvider,
     signOut,
 } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -27,9 +27,21 @@ export const useFirebaseAuth = () => {
     useEffect(() => {
         try {
             const app = initializeApp(firebaseConfig);
-            setDb(getFirestore(app));
+            const firestore = getFirestore(app);
+
+            // Enable offline persistence
+            enableIndexedDbPersistence(firestore).catch((err) => {
+                if (err.code === 'failed-precondition') {
+                    console.warn('Firestore offline persistence failed: Multiple tabs open');
+                } else if (err.code === 'unimplemented') {
+                    console.warn('Firestore offline persistence not supported in this browser');
+                }
+            });
+
+            setDb(firestore);
             const firebaseAuth = getAuth(app);
             setAuth(firebaseAuth);
+
             const unsubscribe = onAuthStateChanged(firebaseAuth, (currentUser) => {
                 setUser(currentUser);
                 setIsAuthReady(true);

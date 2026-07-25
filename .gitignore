@@ -1,3 +1,10 @@
+# Environment Variables (DO NOT PUSH TO GITHUB)
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
 # Logs
 logs
 *.log
@@ -7,10 +14,19 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Node & Build Outputs
 node_modules
 dist
 dist-ssr
 *.local
+
+# Android Local Files & Build Output
+android/app/build
+android/build
+android/.gradle
+android/local.properties
+android/captures
+android/.idea
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +38,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+

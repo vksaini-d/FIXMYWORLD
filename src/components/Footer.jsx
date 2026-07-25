@@ -1,15 +1,15 @@
 import React from 'react';
 
 export const Footer = ({ weather }) => (
-    <footer className="flex-none border-t border-gray-800 bg-black/80 p-6 text-center backdrop-blur-md">
-        <p className="text-gray-500 text-sm">© 2025 FIXMYWORLD. Built for a better tomorrow by Vikash Saini.</p>
+    <footer className="flex-none border-t border-white/10 bg-slate-950/70 p-4 text-center backdrop-blur-xl mb-14 md:mb-0">
+        <p className="text-gray-400 text-xs">© 2026 FIXMYWORLD • Built with React & Capacitor by Vikash Saini</p>
         {weather && (
-            <div className="mt-2 flex items-center justify-center gap-4 text-xs text-cyan-600 font-mono">
+            <div className="mt-1.5 flex items-center justify-center gap-3 text-[11px] text-cyan-400 font-mono font-medium">
                 <span>{weather.condition}</span>
-                <span>•</span>
+                <span className="text-gray-600">•</span>
                 <span>{weather.temp_c}°C</span>
-                <span>•</span>
-                <span>Hum: {weather.humidity}%</span>
+                <span className="text-gray-600">•</span>
+                <span>Humidity: {weather.humidity}%</span>
             </div>
         )}
     </footer>
