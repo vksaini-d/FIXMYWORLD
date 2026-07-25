@@ -20,13 +20,15 @@ dist
 dist-ssr
 *.local
 
-# Android Local Files & Build Output
+# Android Local Files & Credentials
 android/app/build
 android/build
 android/.gradle
 android/local.properties
 android/captures
 android/.idea
+google-services.json
+**/google-services.json
 
 # Editor directories and files
 .vscode/*
