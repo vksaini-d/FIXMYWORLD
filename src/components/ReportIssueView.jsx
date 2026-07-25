@@ -36,19 +36,64 @@ export const ReportIssueView = ({ db, userId, onIssueReported }) => {
     const [loading, setLoading] = useState(false);
     const [mapStyle, setMapStyle] = useState('dark');
 
-    // Handle Image file selection & instant preview
-    const handleImageChange = (e) => {
+    // Canvas Image Compressor to stay safely under Firestore's 1MB document limit
+    const compressImage = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1000;
+                    const MAX_HEIGHT = 1000;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = Math.round((height * MAX_WIDTH) / width);
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width = Math.round((width * MAX_HEIGHT) / height);
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Compress to JPEG with 0.75 quality (~100KB-200KB)
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+                    resolve(dataUrl);
+                };
+                img.onerror = (err) => reject(err);
+            };
+            reader.onerror = (err) => reject(err);
+        });
+    };
+
+    // Handle Image file selection & automatic client-side compression
+    const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                toast.error('Image size must be under 5MB');
+            if (file.size > 10 * 1024 * 1024) {
+                toast.error('Image size must be under 10MB');
                 return;
             }
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
+            try {
+                const compressedBase64 = await compressImage(file);
+                setImagePreview(compressedBase64);
+                toast.success('Photo attached!');
+            } catch (err) {
+                console.error('Image compression failed', err);
+                toast.error('Failed to process image');
+            }
         }
     };
 
@@ -281,7 +326,7 @@ export const ReportIssueView = ({ db, userId, onIssueReported }) => {
                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                     <IconUpload className="w-7 h-7 text-emerald-400 mb-1.5" />
                                     <p className="text-xs text-slate-300"><span className="font-semibold text-emerald-400">Click to upload</span> or drag photo</p>
-                                    <p className="text-[10px] text-slate-500 mt-0.5 font-mono">PNG, JPG, WEBP (Max 5MB)</p>
+                                    <p className="text-[10px] text-slate-500 mt-0.5 font-mono">PNG, JPG, WEBP (Max 10MB)</p>
                                 </div>
                                 <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                             </label>
